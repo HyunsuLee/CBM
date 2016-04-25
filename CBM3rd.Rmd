@@ -12,6 +12,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 #library(foreign) spss package가 있지만 에러가 남.
 library(memisc)
 library(ggplot2)
+library(moonBook)
 ```
 
 ## load file
@@ -20,4 +21,26 @@ library(ggplot2)
 cbm<-as.data.frame(as.data.set(spss.system.file('CBM3rd.sav'))) #working directory에 있는 파일 바로 불러 cbm에 저장
 head(cbm) #data check
 ```
+
+## data set manupulation
+```{r, echo=FALSE}
+thirdhead <-c("head", "start", "cbmenter", "cbm1", "cbm2", "cbmenterp", "cbmoutp", "cbm1p", "cbm2p", "mcn") ##추출용 data column지정
+cbm3head <-cbm[thirdhead] ##data 추출
+cbm3head$head <-factor(cbm3head$head, levels = c(0, 1), labels = c("3rd head -", "3rd head +")) ## 3rd 유무 표시, 범주화
+newcbm3head<-subset(cbm3head, cbmenter>0) ## MCN entry point가 있는 data만 추출
+```
+
+## 3rd head table
+```{r, echo=FALSE}
+mytable(head~., data = newcbm3head)
+```
+
+## plot scattering
+```{r, echo=FALSE}
+qplot(head, cbm2, data = newcbm3head, geom=c("boxplot", "jitter"), fill = head, xlab = "3rd head existence", ylab = "Tolal length of CBM(mm)")
+qplot(head, cbm2p, data = newcbm3head, geom=c("boxplot", "jitter"), fill = head, xlab = "3rd head existence", ylab = "Length of CBM(%)")
+qplot(head, cbmenter, data = newcbm3head, geom=c("boxplot", "jitter"), fill = head, xlab = "3rd head existence", ylab = "MCN entry point(mm)")
+qplot(head, cbmenterp, data = newcbm3head, geom=c("boxplot", "jitter"), fill = head, xlab = "3rd head existence", ylab = "MCN entry point(%)")
+```
+
 
