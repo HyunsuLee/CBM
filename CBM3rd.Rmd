@@ -13,6 +13,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 library(memisc)
 library(ggplot2)
 library(moonBook)
+library(reshape2)
 ```
 
 ## load file
@@ -26,8 +27,12 @@ head(cbm) #data check
 ```{r, echo=FALSE}
 thirdhead <-c("head", "start", "cbmenter", "cbm1", "cbm2", "cbmenterp", "cbmoutp", "cbm1p", "cbm2p", "mcn") ##추출용 data column지정
 cbm3head <-cbm[thirdhead] ##data 추출
-cbm3head$head <-factor(cbm3head$head, levels = c(0, 1), labels = c("3rd head -", "3rd head +")) ## 3rd 유무 표시, 범주화
+cbm3head$head <-factor(cbm3head$head, levels = c(0, 1), labels = c("Third head -", "Third head +")) ## 3rd 유무 표시, 범주화
 newcbm3head<-subset(cbm3head, cbmenter>0) ## MCN entry point가 있는 data만 추출
+subcbm3head<-newcbm3head[c("head", "cbm2p", "cbmenterp")]
+colnames(subcbm3head) <- c("Third head of BBM", "Length of CBM", "MCN entry")
+meltcbm3head<-melt(subcbm3head)
+colnames(meltcbm3head) <- c("head", "topology", "percentile")
 ```
 
 ## 3rd head table
@@ -37,10 +42,32 @@ mytable(head~., data = newcbm3head)
 
 ## plot scattering
 ```{r, echo=FALSE}
+
+'''
 qplot(head, cbm2, data = newcbm3head, geom=c("boxplot", "jitter"), fill = head, xlab = "3rd head existence", ylab = "Tolal length of CBM(mm)")
 qplot(head, cbm2p, data = newcbm3head, geom=c("boxplot", "jitter"), fill = head, xlab = "3rd head existence", ylab = "Length of CBM(%)")
 qplot(head, cbmenter, data = newcbm3head, geom=c("boxplot", "jitter"), fill = head, xlab = "3rd head existence", ylab = "MCN entry point(mm)")
 qplot(head, cbmenterp, data = newcbm3head, geom=c("boxplot", "jitter"), fill = head, xlab = "3rd head existence", ylab = "MCN entry point(%)")
+'''
+
+
+ggplot(meltcbm3head, aes(head, percentile)) +
+  #박스 플랏, point jittering
+  geom_boxplot() +geom_jitter(width=0.4) + 
+  #axis labelling 바꾸기
+  labs(x = "", y = "Percentile to the reference line") + 
+  # 배경 하얗게
+  theme_classic()+theme_linedraw()+theme_light() + 
+  # tick size, axis tile size 조절
+  theme(axis.text =element_text(size = 9)) + theme(axis.title=element_text(size=11)) +
+  #facetting & y 축 scale 풀어주기, facet labbelling 밑으로 보내기
+  facet_wrap(~topology, scales = "free_y", switch ="x") + 
+  #facet label 배경 하얗게, text colour 검은색 만들어주기
+  theme(strip.background=element_blank(), strip.text.x=element_text(colour = "black", size=11))
+
+
+# 이미지 저장, dpi 300으로 한다 해도 포토샵에서 열어보면 72dpi 임 사이즈와 dpi를 수정 해줄것.
+ggsave("3rdhead.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
 ```
 
 
