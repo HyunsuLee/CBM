@@ -53,7 +53,7 @@ qplot(head, cbmenterp, data = newcbm3head, geom=c("boxplot", "jitter"), fill = h
 
 ggplot(meltcbm3head, aes(head, percentile)) +
   #박스 플랏, point jittering
-  geom_boxplot() +geom_jitter(width=0.4) + 
+  geom_boxplot() +#geom_jitter(width=0.4) + 
   #axis labelling 바꾸기
   labs(x = "", y = "Percentile to the reference line") + 
   # 배경 하얗게
@@ -67,7 +67,7 @@ ggplot(meltcbm3head, aes(head, percentile)) +
 
 
 # 이미지 저장, dpi 300으로 한다 해도 포토샵에서 열어보면 72dpi 임 사이즈와 dpi를 수정 해줄것.
-ggsave("3rdhead.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
+ggsave("3rdheadbox.tiff", dpi = 300, units = c("in"), width = 7, height = 5)
 ```
 
 
